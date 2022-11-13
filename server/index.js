@@ -1,42 +1,66 @@
 const express = require("express")
-// const mongo = require('mongodb')
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const person_doc = require("./Model");
 
-const model = require('./model')
+const connectionString = "mongodb://localhost:27017/PeopleDB"
 
 // connect mongoose to mongodb database
 // add database path in ()
-mongoose.connect("mongodb+srv://userTest:password123456@cluster0.n8pbs9v.mongodb.net/Tutorial_01");
-const app = express()
-// init app
-app.use(express.json)
+mongoose.connect(connectionString, {useUnifiedTopology: true,useNewUrlParser: true}).
+catch(error => handleError(error))
+const db = mongoose.connection
+db.on('error', function(err)
+{console.log("Error occured during connection"+err)
+}
+);
 
-app.get("/getData", (req, res) => {
-   model.find({}, (err, res) => {
-    if (err) {
-        res.json(err)
-    } else {
-        res.json(res)
-    }
-   })
+person_doc.findOne(function(error, result){
+    console.log(`results: ${result}`)
 })
 
+// const app = express()
+// // init app
+// app.use(express.json)
 
+db.once('connected', function() {
+    console.log(`Connected to ${connectionString}`)
+    // model.find({}, function(error, PO) {
+    //     console.log("im here!")
+    //     console.log(PO);
+    // });
+})
 
-// nodemon package important - makes server reload automatically
+// creating the scheme
 
-// get takes a path and a function
-// app.get('./', (request, response) => {
-//     console.log('Here')
-//     // sends internal error
-//     response.sendStatus(500)
-//     response.send('hi')
-//     response.download('server.js')
-//     response.render('index')
-// })
+// Create single Doc
+const id = mongoose.Types.ObjectId();
+const doc1 = new person_doc({_id: id, name: 'Jack',age:32,Gender:"Male",Salary:3456})
+// saving document created
+doc1.save(function(err, doc){
+    if (err) return console.log(err)
+    console.log('saving a single doc :', doc)
+})
+
+// fetch all data
+person_doc.find({})
+    .limit(10)
+    .exec()
+    .then(docs => {
+        console.log("showing multiple docs")
+        docs.forEach(function(item) {
+            console.log(item)
+        })
+    })
+    .catch(err => {
+        console.error(err)
+})
+
 
 // runs server on port 3000
-app.listen(3000, () => {
-    console.log("server is running fine")
-})
+// app.listen(3000, () => {
+//     console.log("server is running fine")
+//     mongoose.set("debug", (collectionName, method, query, doc) => {
+//         console.log(`${PeopleDB}.${method}`, JSON.stringify(query), doc);
+//     });
+// })
 

@@ -1,19 +1,20 @@
+const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose")
 
-const schema = new mongoose.Schema({
+const PersonScheme = new mongoose.Schema({
+    _id: {
+        type: ObjectId
+    },
     name: {
-        type: String,
-        required: true,
+    type: String,
+    // required: true
     },
-    age: {
-        type: Number,
-        required: true
-    },
-    username: {
-        type: String,
-        required: true
-    }
-})
+    Age: Number,
+    Gender:String,
+    Salary:Number
+    });
+    // creating model named as modelname with collection named as personCollection
+    const person_doc = mongoose.model('People', PersonScheme, 'People');
 
-const model = mongoose.model("database name", schema)
-module.exports = model
+
+module.exports = person_doc
