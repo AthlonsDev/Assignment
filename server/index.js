@@ -1,41 +1,43 @@
-const express = require('express');
+const mongoose = require('mongoose')
+const cricketModel = require('./models/Crickets')
+const mongoURI = 'mongodb://localhost:27017/CricketDB'
+mongoose.connect(mongoURI, {useUnifiedTopology: true,useNewUrlParser: true}).
+catch(error => handleError(error))
+const db = mongoose.connection
 
-const app = express();
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}))
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+
+//for post data
+app.use(bodyParser.json())
+const {format} = require('path')
+const {response} = require('express')
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
 
 
-app.get('/about', (req, res) => {
 
-    res.status(200).json({
-        message: 'Hello World!'
-
+app.get('/all', (req, res) => {
+    // res.send('running moongodb server on express.')
+    // cricketModel.countDocuments().exec()
+    // .then(count=>{
+    // console.log("Total documents Count :", count)
+    // res.json(count)
+    // }) .catch(err => {
+    // console.error(err)
+    // })
+    cricketModel.find(function(err, doc) {
+        if(err) {
+            console.error(err)
+        } else{
+            res.json(doc)
+        }
     })
-
-    res.send("This is a test")
-    
 })
 
-app.get('/users/:userId/books/:bookId', (req, res) => {
-    res.send(req.params)
-})
-// .catch(err => console.log(err))
-var fs = require('fs');
-
-app.get('/GetStudents',function (req,res)
-{ studentdata={} 
-
-fs.readFile(__dirname + "/" + "StudentInfo.json", 'utf8',
-
-function (err, data) { console.log( data );
-
- res.json({ 'status':true, 'Status_Code':200,
- 'requested at: ': req.localtime, 'required url: ':req.url,
- 'request method: ':req.method, 'student data: ':JSON.parse(data)})
-})
-})
-
-app.listen(3000, function () {
-    console.log('listening on port 3000');
+app.listen(3000, () => {
+    console.log('Listening on port 3000')
 
 })
