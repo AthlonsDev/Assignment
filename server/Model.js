@@ -13,7 +13,7 @@ const PersonScheme = new mongoose.Schema({
     Gender:String,
     Salary:Number
     });
-    // creating model named as modelname with collection named as personCollection
+    // creating model named as person_doc with collection named as People
     const person_doc = mongoose.model('People', PersonScheme, 'People');
 
 

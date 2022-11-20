@@ -1,66 +1,41 @@
-const express = require("express")
-const mongoose = require('mongoose');
-const person_doc = require("./Model");
+const express = require('express');
 
-const connectionString = "mongodb://localhost:27017/PeopleDB"
+const app = express();
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({extended: true}))
 
-// connect mongoose to mongodb database
-// add database path in ()
-mongoose.connect(connectionString, {useUnifiedTopology: true,useNewUrlParser: true}).
-catch(error => handleError(error))
-const db = mongoose.connection
-db.on('error', function(err)
-{console.log("Error occured during connection"+err)
-}
-);
 
-person_doc.findOne(function(error, result){
-    console.log(`results: ${result}`)
-})
+app.get('/about', (req, res) => {
 
-// const app = express()
-// // init app
-// app.use(express.json)
+    res.status(200).json({
+        message: 'Hello World!'
 
-db.once('connected', function() {
-    console.log(`Connected to ${connectionString}`)
-    // model.find({}, function(error, PO) {
-    //     console.log("im here!")
-    //     console.log(PO);
-    // });
-})
-
-// creating the scheme
-
-// Create single Doc
-const id = mongoose.Types.ObjectId();
-const doc1 = new person_doc({_id: id, name: 'Jack',age:32,Gender:"Male",Salary:3456})
-// saving document created
-doc1.save(function(err, doc){
-    if (err) return console.log(err)
-    console.log('saving a single doc :', doc)
-})
-
-// fetch all data
-person_doc.find({})
-    .limit(10)
-    .exec()
-    .then(docs => {
-        console.log("showing multiple docs")
-        docs.forEach(function(item) {
-            console.log(item)
-        })
     })
-    .catch(err => {
-        console.error(err)
+
+    res.send("This is a test")
+    
 })
 
+app.get('/users/:userId/books/:bookId', (req, res) => {
+    res.send(req.params)
+})
+// .catch(err => console.log(err))
+var fs = require('fs');
 
-// runs server on port 3000
-// app.listen(3000, () => {
-//     console.log("server is running fine")
-//     mongoose.set("debug", (collectionName, method, query, doc) => {
-//         console.log(`${PeopleDB}.${method}`, JSON.stringify(query), doc);
-//     });
-// })
+app.get('/GetStudents',function (req,res)
+{ studentdata={} 
 
+fs.readFile(__dirname + "/" + "StudentInfo.json", 'utf8',
+
+function (err, data) { console.log( data );
+
+ res.json({ 'status':true, 'Status_Code':200,
+ 'requested at: ': req.localtime, 'required url: ':req.url,
+ 'request method: ':req.method, 'student data: ':JSON.parse(data)})
+})
+})
+
+app.listen(3000, function () {
+    console.log('listening on port 3000');
+
+})
